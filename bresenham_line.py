@@ -1,57 +1,88 @@
-import glfw
 from OpenGL.GL import *
+from OpenGL.GLUT import *
+from OpenGL.GLU import *
 
-WIDTH, HEIGHT = 800, 600
+points = []
 
-# Convert pixel coordinates to OpenGL coordinates
-def plot(x, y):
-    glVertex2f((x / WIDTH) * 2 - 1,
-               (y / HEIGHT) * 2 - 1)
+def bresenham_line(x1,y1,x2,y2):
+    x,y=x1,y1
+    diffx=abs(x2-x1)
+    diffy=abs(y2-y1)
+    
+    # print(diffx,diffy)
+    points.clear()
+    points.append((x,y))
 
-def bresenham(x1, y1, x2, y2):
-    dx = abs(x2 - x1)
-    dy = abs(y2 - y1)
+    slope=diffy/diffx
+    if 0<=slope<=1:
+        p=[0]*(diffx+1)
+        para1=2*diffy
+        para2=2*diffy-2*diffx
+        p[0]=para1-diffx
 
-    sx = 1 if x2 > x1 else -1
-    sy = 1 if y2 > y1 else -1
 
-    err = dx - dy
+        for i in range(0,diffx):
+            if p[i]<0:
+                x=x+1
+                p[i+1]=p[i]+para1
+            else:
+                x,y=x+1,y+1
+                p[i+1]=p[i]+para2  
+            points.append((x,y))  
+    if slope>1:
+            p=[0]*(diffy+1)
+            para1=2*diffx
+            para2=2*diffx-2*diffy
+            p[0]=para1-diffy
+    
+    
+            for i in range(0,diffy):
+                if p[i]<0:
+                    y=y+1
+                    p[i+1]=p[i]+para1
+                else:
+                    x,y=x+1,y+1
+                    p[i+1]=p[i]+para2 
+                points.append((x,y))  
+    # return points
 
-    glBegin(GL_POINTS)
-
-    while True:
-        plot(x1, y1)
-
-        if x1 == x2 and y1 == y2:
-            break
-
-        e2 = 2 * err
-
-        if e2 > -dy:
-            err -= dy
-            x1 += sx
-
-        if e2 < dx:
-            err += dx
-            y1 += sy
-
-    glEnd()
-
-if not glfw.init():
-    raise Exception("GLFW failed")
-
-window = glfw.create_window(WIDTH, HEIGHT, "Bresenham Line", None, None)
-glfw.make_context_current(window)
-
-while not glfw.window_should_close(window):
-
+def display():
     glClear(GL_COLOR_BUFFER_BIT)
+    glColor3f(0.0, 1.0, 0.0)
+    glPointSize(5)
+    glBegin(GL_POINTS)
+    for x, y in points:
+        glVertex2f(x, y)
+    glEnd()
+    glFlush()
 
-    glColor3f(1, 1, 1)
+def init():
 
-    bresenham(100, 100, 700, 500)
+    glClearColor(0.0, 0.0, 0.0, 1.0)
+    glMatrixMode(GL_PROJECTION)
+    glLoadIdentity()
+    gluOrtho2D(0, 800, 0, 600)
+    # gluOrtho2D(0, 100, 0, 100)
 
-    glfw.swap_buffers(window)
-    glfw.poll_events()
 
-glfw.terminate()
+# bresenham_line(20, 10, 30, 18)
+bresenham_line(100, 100,700, 500)
+
+glutInit()
+glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB)
+
+glutInitWindowSize(800, 600)
+glutInitWindowPosition(100, 100)
+
+glutCreateWindow(b"Bresenham Line Algorithm")
+
+init()
+
+glutDisplayFunc(display)
+
+glutMainLoop()
+
+# p1=bresenham_line(20,10,30,18)
+# print("example 1",p1) 
+# p2=bresenham_line(2,2,5,9)      
+# print("example 2",p2)
