@@ -1,0 +1,14 @@
+﻿[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Ll]ogs/
+[Uu]serSettings/
+[Bb]uild/
+[Bb]uilds/
+.vs/
+*.csproj
+*.sln
+*.slnx
+*.user
+*.vsconfig
+UpgradeLog.htm
